@@ -1,7 +1,18 @@
-import { notFoundError } from "@/errors";
+import { notFoundError, paymentRequiredError } from "@/errors";
 import hotelRepository from "@/repositories/hotel-repository";
+import ticketRepository from "@/repositories/ticket-repository";
 
-async function getHotels() {
+async function getHotels(userId: number) {
+  const userTicket = await ticketRepository.findTicketByUserId(userId);
+
+  if (!userTicket) {
+    throw notFoundError();
+  }
+
+  if (userTicket.status !== "PAID" || userTicket.TicketType.isRemote || !userTicket.TicketType.includesHotel) {
+    throw paymentRequiredError();
+  }
+
   const hotels = await hotelRepository.findHotels();
 
   if (!hotels) {
@@ -10,7 +21,17 @@ async function getHotels() {
   return hotels;
 }
 
-async function getHotelById(id: number) {
+async function getHotelById(id: number, userId: number) {
+  const userTicket = await ticketRepository.findTicketByUserId(userId);
+
+  if (!userTicket) {
+    throw notFoundError();
+  }
+
+  if (userTicket.status !== "PAID" || userTicket.TicketType.isRemote || !userTicket.TicketType.includesHotel) {
+    throw paymentRequiredError();
+  }
+
   const hotel = await hotelRepository.findHotelById(id);
 
   if (!hotel) {
