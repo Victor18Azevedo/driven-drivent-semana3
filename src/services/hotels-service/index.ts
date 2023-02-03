@@ -28,14 +28,14 @@ async function getHotelById(id: number, userId: number) {
     throw notFoundError();
   }
 
-  if (userTicket.status !== "PAID" || userTicket.TicketType.isRemote || !userTicket.TicketType.includesHotel) {
-    throw paymentRequiredError();
-  }
-
   const hotel = await hotelRepository.findHotelById(id);
 
   if (!hotel) {
     throw notFoundError();
+  }
+
+  if (userTicket.status !== "PAID" || userTicket.TicketType.isRemote || !userTicket.TicketType.includesHotel) {
+    throw paymentRequiredError();
   }
 
   return hotel;
