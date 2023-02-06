@@ -9,14 +9,14 @@ async function getHotels(userId: number) {
     throw notFoundError();
   }
 
-  if (userTicket.status !== "PAID" || userTicket.TicketType.isRemote || !userTicket.TicketType.includesHotel) {
-    throw paymentRequiredError();
-  }
-
   const hotels = await hotelRepository.findHotels();
 
-  if (!hotels) {
+  if (!hotels.length) {
     throw notFoundError();
+  }
+
+  if (userTicket.status !== "PAID" || userTicket.TicketType.isRemote || !userTicket.TicketType.includesHotel) {
+    throw paymentRequiredError();
   }
   return hotels;
 }
@@ -28,14 +28,14 @@ async function getHotelById(id: number, userId: number) {
     throw notFoundError();
   }
 
-  if (userTicket.status !== "PAID" || userTicket.TicketType.isRemote || !userTicket.TicketType.includesHotel) {
-    throw paymentRequiredError();
-  }
-
   const hotel = await hotelRepository.findHotelById(id);
 
   if (!hotel) {
     throw notFoundError();
+  }
+
+  if (userTicket.status !== "PAID" || userTicket.TicketType.isRemote || !userTicket.TicketType.includesHotel) {
+    throw paymentRequiredError();
   }
 
   return hotel;
